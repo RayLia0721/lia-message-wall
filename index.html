@@ -6,14 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <style>
     html, body {
-      margin: 0; padding: 0; height: 100%;
+      margin: 0;
+      padding: 0;
+      height: 100%;
       font-family: Arial, sans-serif;
       background-color: #dbbcff;
       background: url('https://lh3.googleusercontent.com/pw/AP1GczMOSBIOVaDU-qDpRGGr3R3_VhYd_07X0PK3T63xCjCS0oxVYdys4QPSxMEGZcHVzgZLGDDLv_SuyxLNy9XZEeW676QqkL7YDIyOvWsY9dnhDkG2aI9vsnFUEIz2FlQcSlEPz3WffmyJjYBSiGRaHqg=w1600-h739-s-no-gm?authuser=0') no-repeat center center fixed;
       background-size: contain;
       overflow: hidden;
     }
-
     #floating-message-container {
       position: fixed;
       top: 0; left: 0;
@@ -21,7 +22,6 @@
       height: 100%;
       pointer-events: none;
     }
-
     .floating-message {
       position: absolute;
       background: rgba(255,255,255,0.9);
@@ -33,15 +33,13 @@
       overflow-wrap: break-word;
       transition: transform 10s linear;
     }
-
     .floating-message img {
-      width: 31.2px;
-      height: 31.2px;
+      width: 31px;
+      height: 31px;
       border-radius: 50%;
       vertical-align: middle;
       margin-right: 6px;
     }
-
     #message-wall {
       position: fixed;
       top: 0; right: 0;
@@ -51,26 +49,11 @@
       padding: 20px 10px 80px;
       box-sizing: border-box;
     }
-
     #message-count {
       font-weight: bold;
       margin-bottom: 12px;
       text-align: center;
     }
-
-    #clear-all-btn {
-      display: block;
-      width: 80%;
-      margin: 0 auto 15px;
-      background: #f0768b;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 8px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
     #message-list .message {
       background: white;
       margin-bottom: 12px;
@@ -79,10 +62,8 @@
       box-shadow: 0 0 6px rgba(0,0,0,0.1);
       word-wrap: break-word;
       overflow-wrap: break-word;
-      max-width: 300px;
       position: relative;
     }
-
     .delete-btn {
       position: absolute;
       top: 8px;
@@ -95,7 +76,6 @@
       font-size: 12px;
       cursor: pointer;
     }
-
     #message-list img.avatar {
       width: 52px;
       height: 52px;
@@ -103,19 +83,16 @@
       vertical-align: middle;
       margin-right: 6px;
     }
-
     #message-list img.uploaded-photo {
       max-width: 100%;
       border-radius: 8px;
       margin-top: 8px;
     }
-
     .meta {
       font-size: 11px;
       color: #888;
       margin-top: 4px;
     }
-
     #input-box {
       position: fixed;
       bottom: 20px;
@@ -128,17 +105,17 @@
       z-index: 10;
       box-sizing: border-box;
     }
-
     #input-box input,
     #input-box textarea {
-      width: 100%; padding: 8px;
-      margin-top: 6px; margin-bottom: 10px;
+      width: 100%;
+      padding: 8px;
+      margin-top: 6px;
+      margin-bottom: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
       box-sizing: border-box;
     }
-
     #avatar-label, #photo-label {
       display: block;
       background-color: #eee;
@@ -149,13 +126,12 @@
       margin-bottom: 10px;
       user-select: none;
     }
-
     #avatarUpload, #photoUpload {
       display: none;
     }
-
     #input-box button {
-      width: 100%; padding: 10px;
+      width: 100%;
+      padding: 10px;
       background: #7979ed;
       color: white;
       border: none;
@@ -163,11 +139,9 @@
       cursor: pointer;
       font-size: 15px;
     }
-
-    /* 手機響應式 */
     @media (max-width: 480px) {
       html, body {
-        overflow: auto; /* 手機允許整體滾動 */
+        overflow: auto;
         height: auto;
       }
       #floating-message-container {
@@ -178,24 +152,22 @@
         margin-bottom: 10px;
       }
       #message-wall {
-        position: relative !important;
         width: 100% !important;
-        height: 300px; /* 固定留言區高度，方便滾動 */
-        overflow-y: auto !important;
-        padding: 10px;
+        height: 250px;
+        overflow-y: auto;
+        margin-bottom: 60px;
         box-sizing: border-box;
-        margin-bottom: 70px; /* 預留輸入區空間 */
       }
       #input-box {
         position: fixed !important;
-        bottom: 0 !important;
-        right: 0 !important;
-        left: 0 !important;
+        bottom: 0;
+        left: 0;
+        right: 0;
         width: 100% !important;
         border-radius: 0 !important;
         box-shadow: 0 -3px 10px rgba(0,0,0,0.15) !important;
-        padding: 10px !important;
-        z-index: 1000 !important;
+        padding: 10px;
+        z-index: 1000;
       }
     }
   </style>
@@ -219,7 +191,7 @@
   <label for="photoUpload" id="photo-label">上傳照片 Upload a photo</label>
   <input type="file" id="photoUpload" accept="image/*" />
 
-  <button onclick="submitComment()">送出留言 Submit </button>
+  <button onclick="submitComment()">送出留言 Submit</button>
 </div>
 
 <audio id="bg-music" autoplay loop>
@@ -239,7 +211,7 @@
     authDomain: "lia-message-board.firebaseapp.com",
     databaseURL: "https://lia-message-board-default-rtdb.firebaseio.com",
     projectId: "lia-message-board",
-    storageBucket: "lia-message-board.firebasestorage.app",
+    storageBucket: "lia-message-board.appspot.com",
     messagingSenderId: "665551485788",
     appId: "1:665551485788:web:dc99c381d55756c2571f99"
   };
@@ -254,22 +226,19 @@
     .then(data => userCountry = (data.country === 'TW') ? 'Taiwan' : data.country)
     .catch(() => {});
 
-onSnapshot(messagesRef, snapshot => {
-  const messages = [];
-  document.getElementById('floating-message-container').innerHTML = ''; // 清空舊的漂浮留言
-
-  snapshot.forEach(doc => {
-    const data = { ...doc.data(), id: doc.id };
-    messages.push(data);
-    showFloatingMessage(data.username, data.comment, data.avatarSrc); // <-- 這行很重要
+  onSnapshot(messagesRef, snapshot => {
+    const messages = [];
+    document.getElementById('floating-message-container').innerHTML = '';
+    snapshot.forEach(doc => {
+      const data = { ...doc.data(), id: doc.id };
+      messages.push(data);
+      showFloatingMessage(data.username, data.comment, data.avatarSrc);
+    });
+    messages.sort((a, b) => a.time - b.time);
+    renderMessages(messages);
   });
 
-  messages.sort((a, b) => a.time - b.time);
-  renderMessages(messages);
-});
-
-
-  window.submitComment = async function submitComment() {
+  window.submitComment = async function () {
     const username = document.getElementById('username').value.trim();
     const comment = document.getElementById('comment').value.trim();
     const avatarInput = document.getElementById('avatarUpload');
@@ -291,7 +260,7 @@ onSnapshot(messagesRef, snapshot => {
 
     const readerPromises = [];
 
-    if (avatarInput.files && avatarInput.files[0]) {
+    if (avatarInput.files[0]) {
       const avatarReader = new FileReader();
       readerPromises.push(new Promise(resolve => {
         avatarReader.onload = e => resolve({ avatarSrc: e.target.result });
@@ -301,7 +270,7 @@ onSnapshot(messagesRef, snapshot => {
       readerPromises.push(Promise.resolve({ avatarSrc: defaultAvatar }));
     }
 
-    if (photoInput.files && photoInput.files[0]) {
+    if (photoInput.files[0]) {
       const photoReader = new FileReader();
       readerPromises.push(new Promise(resolve => {
         photoReader.onload = e => resolve({ photoSrc: e.target.result });
@@ -315,73 +284,48 @@ onSnapshot(messagesRef, snapshot => {
     const avatarSrc = results[0].avatarSrc;
     const photoSrc = results[1].photoSrc;
 
-    const msg = {
+    await addDoc(messagesRef, {
       username, comment, avatarSrc, photoSrc,
       timestamp, country: userCountry, time: Date.now()
-    };
+    });
 
-    await addDoc(messagesRef, msg);
-    showFloatingMessage(username, comment, avatarSrc);
-    document.getElementById('notification-sound')?.play();
-
+    document.getElementById('notification-sound').play();
     document.getElementById('username').value = '';
     document.getElementById('comment').value = '';
     document.getElementById('avatarUpload').value = '';
     document.getElementById('photoUpload').value = '';
   };
 
-  window.deleteMessage = async function deleteMessage(id) {
-    if (confirm("確定要刪除此留言嗎？")) {
-      await deleteDoc(doc(db, "messages", id));
-    }
-  };
-
-  window.clearAllMessages = async function clearAllMessages() {
-    if (confirm("確定要清除所有留言嗎？")) {
-      const snapshot = await getDocs(messagesRef);
-      for (const docSnap of snapshot.docs) {
-        await deleteDoc(docSnap.ref);
-      }
-    }
-  };
-
-  window.renderMessages = function renderMessages(messages) {
+  window.renderMessages = function (messages) {
     const list = document.getElementById('message-list');
     const count = document.getElementById('message-count');
     list.innerHTML = '';
     count.innerText = `目前留言數：${messages.length}`;
-
     for (const msg of messages) {
       const commentDiv = document.createElement('div');
       commentDiv.className = 'message';
       commentDiv.innerHTML = `
         <button class="delete-btn" onclick="deleteMessage('${msg.id}')">刪除</button>
-        <div><img src="${msg.avatarSrc}" alt="avatar" class="avatar" />
-        <strong>${msg.username}</strong></div>
+        <div><img src="${msg.avatarSrc}" class="avatar" /><strong>${msg.username}</strong></div>
         <div>${msg.comment}</div>
         ${msg.photoSrc ? `<img src="${msg.photoSrc}" class="uploaded-photo" />` : ''}
         <div class="meta">${msg.timestamp} ${msg.country || ''}</div>
       `;
       list.appendChild(commentDiv);
     }
+    document.getElementById('message-wall').scrollTop = list.scrollHeight;
+  };
 
-    document.getElementById('message-wall').scrollTop = document.getElementById('message-wall').scrollHeight;
-  }
-
-  window.showFloatingMessage = function showFloatingMessage(username, comment, avatarSrc) {
+  window.showFloatingMessage = function (username, comment, avatarSrc) {
     const container = document.getElementById('floating-message-container');
     const msg = document.createElement('div');
     msg.className = 'floating-message';
-    msg.innerHTML = `
-      <div><img src="${avatarSrc}" alt="avatar" />
-      <strong>${username}</strong></div>
-      <div>${comment}</div>
-    `;
+    msg.innerHTML = `<div><img src="${avatarSrc}" /><strong>${username}</strong></div><div>${comment}</div>`;
     container.appendChild(msg);
     moveMessageRandomly(msg, container);
-  }
+  };
 
-  window.moveMessageRandomly = function moveMessageRandomly(msg, container) {
+  window.moveMessageRandomly = function (msg, container) {
     const move = () => {
       const maxX = container.clientWidth - msg.offsetWidth;
       const maxY = container.clientHeight - msg.offsetHeight;
@@ -391,7 +335,7 @@ onSnapshot(messagesRef, snapshot => {
     };
     move();
     setInterval(move, 10000);
-  }
+  };
 </script>
 
 </body>
