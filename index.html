@@ -254,12 +254,20 @@
     .then(data => userCountry = (data.country === 'TW') ? 'Taiwan' : data.country)
     .catch(() => {});
 
-  onSnapshot(messagesRef, snapshot => {
-    const messages = [];
-    snapshot.forEach(doc => messages.push({ ...doc.data(), id: doc.id }));
-    messages.sort((a, b) => a.time - b.time);
-    renderMessages(messages);
+onSnapshot(messagesRef, snapshot => {
+  const messages = [];
+  document.getElementById('floating-message-container').innerHTML = ''; // 清空舊的漂浮留言
+
+  snapshot.forEach(doc => {
+    const data = { ...doc.data(), id: doc.id };
+    messages.push(data);
+    showFloatingMessage(data.username, data.comment, data.avatarSrc); // <-- 這行很重要
   });
+
+  messages.sort((a, b) => a.time - b.time);
+  renderMessages(messages);
+});
+
 
   window.submitComment = async function submitComment() {
     const username = document.getElementById('username').value.trim();
