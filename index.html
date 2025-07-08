@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -406,6 +408,22 @@ onSnapshot(messagesRef, snapshot => {
     move();
     setInterval(move, 10000);
   }
+
+const bgMusic = document.getElementById('bg-music');
+const notificationSound = document.getElementById('notification-sound');
+
+let musicStarted = false;
+function startBackgroundMusicOnce() {
+  if (!musicStarted) {
+    bgMusic.play().catch(() => {});
+    musicStarted = true;
+  }
+}
+
+document.getElementById('username').addEventListener('focus', startBackgroundMusicOnce);
+document.getElementById('comment').addEventListener('focus', startBackgroundMusicOnce);
+
+
 </script>
 
 </body>
