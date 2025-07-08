@@ -142,7 +142,7 @@
       margin-top: 6px; margin-bottom: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
-      font-size: 14px;
+      font-size: 12.5px;
       box-sizing: border-box;
     }
 
@@ -168,7 +168,7 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 15px;
+      font-size: 13px;
     }
 
     /* 手機響應式 */
@@ -208,18 +208,18 @@
   box-sizing: border-box;
   margin-bottom: 70px;
 }
-      #input-box {
-        position: fixed !important;
-        bottom: 0 !important;
-        right: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        border-radius: 0 !important;
-        box-shadow: 0 -3px 10px rgba(0,0,0,0.15) !important;
-        padding: 10px !important;
-        z-index: 1000 !important;
-      }
-    }
+#input-box {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 64% !important;  /* 調整寬度，避免擋到右側留言牆 */
+  border-radius: 0 !important;
+  box-shadow: 0 -3px 10px rgba(0,0,0,0.15) !important;
+  padding: 8px !important;
+  z-index: 1000 !important;
+  background: white;
+}
+
   </style>
 </head>
 <body>
@@ -235,7 +235,7 @@
   <input type="text" id="username" placeholder="你的名字 Your name" />
   <textarea id="comment" rows="2" placeholder="輸入留言 Your message..."></textarea>
 
-  <label for="avatarUpload" id="avatar-label">上傳頭像 Upload profile photo</label>
+  <label for="avatarUpload" id="avatar-label">上傳頭像 <br>Upload profile photo</br></label>
   <input type="file" id="avatarUpload" accept="image/*" />
 
   <label for="photoUpload" id="photo-label">上傳照片 Upload a photo</label>
