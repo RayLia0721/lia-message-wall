@@ -6,14 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <style>
     html, body {
-      margin: 0; padding: 0; height: 100%;
+      margin: 0;
+      padding: 0;
+      height: 100%;
       font-family: Arial, sans-serif;
       background-color: #dbbcff;
       background: url('https://lh3.googleusercontent.com/pw/AP1GczMOSBIOVaDU-qDpRGGr3R3_VhYd_07X0PK3T63xCjCS0oxVYdys4QPSxMEGZcHVzgZLGDDLv_SuyxLNy9XZEeW676QqkL7YDIyOvWsY9dnhDkG2aI9vsnFUEIz2FlQcSlEPz3WffmyJjYBSiGRaHqg=w1600-h739-s-no-gm?authuser=0') no-repeat center center fixed;
       background-size: contain;
       overflow: hidden;
     }
-
     #floating-message-container {
       position: fixed;
       top: 0; left: 0;
@@ -21,7 +22,6 @@
       height: 100%;
       pointer-events: none;
     }
-
     .floating-message {
       position: absolute;
       background: rgba(255,255,255,0.9);
@@ -30,9 +30,9 @@
       box-shadow: 0 0 6px rgba(0,0,0,0.2);
       max-width: 200px;
       word-wrap: break-word;
+      overflow-wrap: break-word;
       transition: transform 10s linear;
     }
-
     .floating-message img {
       width: 31px;
       height: 31px;
@@ -40,7 +40,6 @@
       vertical-align: middle;
       margin-right: 6px;
     }
-
     #message-wall {
       position: fixed;
       top: 0; right: 0;
@@ -50,22 +49,21 @@
       padding: 20px 10px 80px;
       box-sizing: border-box;
     }
-
     #message-count {
       font-weight: bold;
       margin-bottom: 12px;
       text-align: center;
     }
-
     #message-list .message {
       background: white;
       margin-bottom: 12px;
       border-radius: 10px;
       padding: 10px;
       box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      word-wrap: break-word;
+      overflow-wrap: break-word;
       position: relative;
     }
-
     .delete-btn {
       position: absolute;
       top: 8px;
@@ -78,27 +76,23 @@
       font-size: 12px;
       cursor: pointer;
     }
-
-    .avatar {
+    #message-list img.avatar {
       width: 52px;
       height: 52px;
       border-radius: 50%;
       vertical-align: middle;
       margin-right: 6px;
     }
-
-    .uploaded-photo {
+    #message-list img.uploaded-photo {
       max-width: 100%;
       border-radius: 8px;
       margin-top: 8px;
     }
-
     .meta {
       font-size: 11px;
       color: #888;
       margin-top: 4px;
     }
-
     #input-box {
       position: fixed;
       bottom: 20px;
@@ -108,10 +102,9 @@
       border-radius: 12px;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
       padding: 14px;
-      box-sizing: border-box;
       z-index: 10;
+      box-sizing: border-box;
     }
-
     #input-box input,
     #input-box textarea {
       width: 100%;
@@ -121,8 +114,8 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
+      box-sizing: border-box;
     }
-
     #avatar-label, #photo-label {
       display: block;
       background-color: #eee;
@@ -131,12 +124,11 @@
       border-radius: 6px;
       cursor: pointer;
       margin-bottom: 10px;
+      user-select: none;
     }
-
     #avatarUpload, #photoUpload {
       display: none;
     }
-
     #input-box button {
       width: 100%;
       padding: 10px;
@@ -144,40 +136,38 @@
       color: white;
       border: none;
       border-radius: 6px;
-      font-size: 15px;
       cursor: pointer;
+      font-size: 15px;
     }
-
     @media (max-width: 480px) {
       html, body {
         overflow: auto;
         height: auto;
       }
-
       #floating-message-container {
-        position: static;
-        width: 100%;
-        height: auto;
+        position: static !important;
+        width: 100% !important;
+        height: auto !important;
+        pointer-events: none;
         margin-bottom: 10px;
       }
-
       #message-wall {
-        position: relative;
-        width: 100%;
-        height: 300px;
-        margin-bottom: 70px;
+        width: 100% !important;
+        height: 250px;
+        overflow-y: auto;
+        margin-bottom: 60px;
+        box-sizing: border-box;
       }
-
       #input-box {
-        position: fixed;
+        position: fixed !important;
         bottom: 0;
         left: 0;
         right: 0;
-        width: 100%;
-        border-radius: 0;
+        width: 100% !important;
+        border-radius: 0 !important;
+        box-shadow: 0 -3px 10px rgba(0,0,0,0.15) !important;
         padding: 10px;
         z-index: 1000;
-        box-shadow: 0 -3px 10px rgba(0,0,0,0.15);
       }
     }
   </style>
@@ -194,10 +184,13 @@
 <div id="input-box">
   <input type="text" id="username" placeholder="你的名字 Your name" />
   <textarea id="comment" rows="2" placeholder="輸入留言 Your message..."></textarea>
+
   <label for="avatarUpload" id="avatar-label">上傳頭像 Upload profile photo</label>
   <input type="file" id="avatarUpload" accept="image/*" />
+
   <label for="photoUpload" id="photo-label">上傳照片 Upload a photo</label>
   <input type="file" id="photoUpload" accept="image/*" />
+
   <button onclick="submitComment()">送出留言 Submit</button>
 </div>
 
@@ -211,19 +204,12 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    onSnapshot,
-    deleteDoc,
-    doc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCKNZ635pFVVf_V1dUL1XRq4GNa07YeeqE",
     authDomain: "lia-message-board.firebaseapp.com",
+    databaseURL: "https://lia-message-board-default-rtdb.firebaseio.com",
     projectId: "lia-message-board",
     storageBucket: "lia-message-board.appspot.com",
     messagingSenderId: "665551485788",
@@ -243,12 +229,12 @@
   onSnapshot(messagesRef, snapshot => {
     const messages = [];
     document.getElementById('floating-message-container').innerHTML = '';
-    snapshot.forEach(docSnap => {
-      const data = { ...docSnap.data(), id: docSnap.id };
+    snapshot.forEach(doc => {
+      const data = { ...doc.data(), id: doc.id };
       messages.push(data);
       showFloatingMessage(data.username, data.comment, data.avatarSrc);
     });
-    messages.sort((a, b) => (a.time?.seconds || 0) - (b.time?.seconds || 0));
+    messages.sort((a, b) => a.time - b.time);
     renderMessages(messages);
   });
 
@@ -272,38 +258,38 @@
 
     const defaultAvatar = 'https://lh3.googleusercontent.com/pw/AP1GczNlQafm937bNM3sCxJih4IXLTyo1x3Ea7qjJrgfK6v6iVTLwXU3RGMG0npHLkJPJBM1sF9VDIlsqPK-fQwPcvzJNqW4nzv6SWjcqV-nKRVn5FN1B8G7fCGwwSKXaxKAFwt1AN1kneMMJTfEz8yY_OU=w739-h739-s-no-gm?authuser=0';
 
-    const readerPromises = [
-      avatarInput.files[0]
-        ? new Promise(resolve => {
-            const r = new FileReader();
-            r.onload = e => resolve({ avatarSrc: e.target.result });
-            r.readAsDataURL(avatarInput.files[0]);
-          })
-        : Promise.resolve({ avatarSrc: defaultAvatar }),
-      photoInput.files[0]
-        ? new Promise(resolve => {
-            const r = new FileReader();
-            r.onload = e => resolve({ photoSrc: e.target.result });
-            r.readAsDataURL(photoInput.files[0]);
-          })
-        : Promise.resolve({ photoSrc: null })
-    ];
+    const readerPromises = [];
+
+    if (avatarInput.files[0]) {
+      const avatarReader = new FileReader();
+      readerPromises.push(new Promise(resolve => {
+        avatarReader.onload = e => resolve({ avatarSrc: e.target.result });
+        avatarReader.readAsDataURL(avatarInput.files[0]);
+      }));
+    } else {
+      readerPromises.push(Promise.resolve({ avatarSrc: defaultAvatar }));
+    }
+
+    if (photoInput.files[0]) {
+      const photoReader = new FileReader();
+      readerPromises.push(new Promise(resolve => {
+        photoReader.onload = e => resolve({ photoSrc: e.target.result });
+        photoReader.readAsDataURL(photoInput.files[0]);
+      }));
+    } else {
+      readerPromises.push(Promise.resolve({ photoSrc: null }));
+    }
 
     const results = await Promise.all(readerPromises);
     const avatarSrc = results[0].avatarSrc;
     const photoSrc = results[1].photoSrc;
 
     await addDoc(messagesRef, {
-      username,
-      comment,
-      avatarSrc,
-      photoSrc,
-      timestamp,
-      country: userCountry,
-      time: serverTimestamp()
+      username, comment, avatarSrc, photoSrc,
+      timestamp, country: userCountry, time: Date.now()
     });
 
-    document.getElementById('notification-sound')?.play();
+    document.getElementById('notification-sound').play();
     document.getElementById('username').value = '';
     document.getElementById('comment').value = '';
     document.getElementById('avatarUpload').value = '';
@@ -315,20 +301,18 @@
     const count = document.getElementById('message-count');
     list.innerHTML = '';
     count.innerText = `目前留言數：${messages.length}`;
-
     for (const msg of messages) {
-      const div = document.createElement('div');
-      div.className = 'message';
-      div.innerHTML = `
+      const commentDiv = document.createElement('div');
+      commentDiv.className = 'message';
+      commentDiv.innerHTML = `
         <button class="delete-btn" onclick="deleteMessage('${msg.id}')">刪除</button>
-        <div><img src="${msg.avatarSrc}" class="avatar" /> <strong>${msg.username}</strong></div>
+        <div><img src="${msg.avatarSrc}" class="avatar" /><strong>${msg.username}</strong></div>
         <div>${msg.comment}</div>
         ${msg.photoSrc ? `<img src="${msg.photoSrc}" class="uploaded-photo" />` : ''}
         <div class="meta">${msg.timestamp} ${msg.country || ''}</div>
       `;
-      list.appendChild(div);
+      list.appendChild(commentDiv);
     }
-
     document.getElementById('message-wall').scrollTop = list.scrollHeight;
   };
 
@@ -345,18 +329,12 @@
     const move = () => {
       const maxX = container.clientWidth - msg.offsetWidth;
       const maxY = container.clientHeight - msg.offsetHeight;
-      const x = Math.random() * maxX;
-      const y = Math.random() * maxY;
-      msg.style.transform = `translate(${x}px, ${y}px)`;
+      const randomX = Math.random() * maxX;
+      const randomY = Math.random() * maxY;
+      msg.style.transform = `translate(${randomX}px, ${randomY}px)`;
     };
     move();
     setInterval(move, 10000);
-  };
-
-  window.deleteMessage = async function (id) {
-    if (confirm("確定要刪除此留言嗎？")) {
-      await deleteDoc(doc(db, "messages", id));
-    }
   };
 </script>
 
