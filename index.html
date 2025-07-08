@@ -186,26 +186,39 @@
   <source src="https://www.dropbox.com/scl/fi/jcejfp8pufq7iqkjemkmh/buyabu.MP3?rlkey=wdh3lmgbswbdlblvv5ai6sfc8&raw=1" />
 </audio>
 
-<script>
-  let messages = [];
-  let userCountry = 'Unknown';
+<!-- Firebase + 留言功能 -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyCKNZ635pFVVf_V1dUL1XRq4GNa07YeeqE",
+    authDomain: "lia-message-board.firebaseapp.com",
+    databaseURL: "https://lia-message-board-default-rtdb.firebaseio.com",
+    projectId: "lia-message-board",
+    storageBucket: "lia-message-board.firebasestorage.app",
+    messagingSenderId: "665551485788",
+    appId: "1:665551485788:web:dc99c381d55756c2571f99"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const messagesRef = collection(db, "messages");
+
+  let userCountry = 'Unknown';
   fetch('https://api.country.is/')
     .then(res => res.json())
     .then(data => userCountry = (data.country === 'TW') ? 'Taiwan' : data.country)
-    .catch(err => console.error('無法取得使用者國家', err));
+    .catch(() => {});
 
-  if (localStorage.getItem('messages')) {
-    try {
-      messages = JSON.parse(localStorage.getItem('messages'));
-      renderMessages();
-      messages.forEach(msg => showFloatingMessage(msg.username, msg.comment, msg.avatarSrc));
-    } catch (e) {
-      console.error('無法解析 localStorage 中的留言資料', e);
-    }
-  }
+  onSnapshot(messagesRef, snapshot => {
+    const messages = [];
+    snapshot.forEach(doc => messages.push({ ...doc.data(), id: doc.id }));
+    messages.sort((a, b) => a.time - b.time);
+    renderMessages(messages);
+  });
 
-  function submitComment() {
+  window.submitComment = async function submitComment() {
     const username = document.getElementById('username').value.trim();
     const comment = document.getElementById('comment').value.trim();
     const avatarInput = document.getElementById('avatarUpload');
@@ -230,75 +243,69 @@
     if (avatarInput.files && avatarInput.files[0]) {
       const avatarReader = new FileReader();
       readerPromises.push(new Promise(resolve => {
-        avatarReader.onload = e => resolve({avatarSrc: e.target.result});
+        avatarReader.onload = e => resolve({ avatarSrc: e.target.result });
         avatarReader.readAsDataURL(avatarInput.files[0]);
       }));
     } else {
-      readerPromises.push(Promise.resolve({avatarSrc: defaultAvatar}));
+      readerPromises.push(Promise.resolve({ avatarSrc: defaultAvatar }));
     }
 
     if (photoInput.files && photoInput.files[0]) {
       const photoReader = new FileReader();
       readerPromises.push(new Promise(resolve => {
-        photoReader.onload = e => resolve({photoSrc: e.target.result});
+        photoReader.onload = e => resolve({ photoSrc: e.target.result });
         photoReader.readAsDataURL(photoInput.files[0]);
       }));
     } else {
-      readerPromises.push(Promise.resolve({photoSrc: null}));
+      readerPromises.push(Promise.resolve({ photoSrc: null }));
     }
 
-    Promise.all(readerPromises).then(results => {
-      const avatarSrc = results[0].avatarSrc;
-      const photoSrc = results[1].photoSrc;
-      const msg = {
-        id: Date.now(),
-        username, comment, avatarSrc, photoSrc, timestamp, country: userCountry, time: Date.now()
-      };
-      messages.push(msg);
-      localStorage.setItem('messages', JSON.stringify(messages));
-      renderMessages();
-      showFloatingMessage(username, comment, avatarSrc);
-      document.getElementById('notification-sound').play();
-    });
+    const results = await Promise.all(readerPromises);
+    const avatarSrc = results[0].avatarSrc;
+    const photoSrc = results[1].photoSrc;
+
+    const msg = {
+      username, comment, avatarSrc, photoSrc,
+      timestamp, country: userCountry, time: Date.now()
+    };
+
+    await addDoc(messagesRef, msg);
+    showFloatingMessage(username, comment, avatarSrc);
+    document.getElementById('notification-sound')?.play();
 
     document.getElementById('comment').value = '';
     document.getElementById('avatarUpload').value = '';
     document.getElementById('photoUpload').value = '';
-  }
+  };
 
-  function deleteMessage(id) {
-    if (confirm('確定要刪除此留言嗎？')) {
-      messages = messages.filter(msg => msg.id !== id);
-      localStorage.setItem('messages', JSON.stringify(messages));
-      renderMessages();
+  window.deleteMessage = async function deleteMessage(id) {
+    if (confirm("確定要刪除此留言嗎？")) {
+      await deleteDoc(doc(db, "messages", id));
     }
-  }
+  };
 
-  function clearAllMessages() {
-    if (confirm('確定要清除所有留言嗎？')) {
-      messages = [];
-      localStorage.removeItem('messages');
-      renderMessages();
+  window.clearAllMessages = async function clearAllMessages() {
+    if (confirm("確定要清除所有留言嗎？")) {
+      const snapshot = await getDocs(messagesRef);
+      for (const docSnap of snapshot.docs) {
+        await deleteDoc(docSnap.ref);
+      }
     }
-  }
+  };
 
-  function renderMessages() {
+  window.renderMessages = function renderMessages(messages) {
     const list = document.getElementById('message-list');
     const count = document.getElementById('message-count');
     list.innerHTML = '';
-
-    messages.sort((a, b) => a.time - b.time);
     count.innerText = `目前留言數：${messages.length}`;
 
     for (const msg of messages) {
       const commentDiv = document.createElement('div');
       commentDiv.className = 'message';
       commentDiv.innerHTML = `
-        <button class="delete-btn" onclick="deleteMessage(${msg.id})">刪除</button>
-        <div>
-          <img src="${msg.avatarSrc}" alt="avatar" class="avatar" />
-          <strong>${msg.username}</strong>
-        </div>
+        <button class="delete-btn" onclick="deleteMessage('${msg.id}')">刪除</button>
+        <div><img src="${msg.avatarSrc}" alt="avatar" class="avatar" />
+        <strong>${msg.username}</strong></div>
         <div>${msg.comment}</div>
         ${msg.photoSrc ? `<img src="${msg.photoSrc}" class="uploaded-photo" />` : ''}
         <div class="meta">${msg.timestamp} ${msg.country || ''}</div>
@@ -309,22 +316,20 @@
     document.getElementById('message-wall').scrollTop = document.getElementById('message-wall').scrollHeight;
   }
 
-  function showFloatingMessage(username, comment, avatarSrc) {
+  window.showFloatingMessage = function showFloatingMessage(username, comment, avatarSrc) {
     const container = document.getElementById('floating-message-container');
     const msg = document.createElement('div');
     msg.className = 'floating-message';
     msg.innerHTML = `
-      <div>
-        <img src="${avatarSrc}" alt="avatar" />
-        <strong>${username}</strong>
-      </div>
+      <div><img src="${avatarSrc}" alt="avatar" />
+      <strong>${username}</strong></div>
       <div>${comment}</div>
     `;
     container.appendChild(msg);
     moveMessageRandomly(msg, container);
   }
 
-  function moveMessageRandomly(msg, container) {
+  window.moveMessageRandomly = function moveMessageRandomly(msg, container) {
     const move = () => {
       const maxX = container.clientWidth - msg.offsetWidth;
       const maxY = container.clientHeight - msg.offsetHeight;
@@ -336,6 +341,5 @@
     setInterval(move, 10000);
   }
 </script>
-
 </body>
 </html>
