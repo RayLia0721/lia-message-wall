@@ -166,16 +166,25 @@
 
     /* 手機響應式 */
     @media (max-width: 480px) {
-      #floating-message-container {
-        width: 100% !important;
+      html, body {
+        overflow: auto; /* 手機允許整體滾動 */
+        height: auto;
       }
-      #message-wall {
+      #floating-message-container {
         position: static !important;
         width: 100% !important;
         height: auto !important;
-        max-width: none !important;
-        overflow: visible !important;
-        padding-bottom: 60px !important;
+        pointer-events: none;
+        margin-bottom: 10px;
+      }
+      #message-wall {
+        position: relative !important;
+        width: 100% !important;
+        height: 300px; /* 固定留言區高度，方便滾動 */
+        overflow-y: auto !important;
+        padding: 10px;
+        box-sizing: border-box;
+        margin-bottom: 70px; /* 預留輸入區空間 */
       }
       #input-box {
         position: fixed !important;
@@ -202,16 +211,16 @@
 </div>
 
 <div id="input-box">
-  <input type="text" id="username" placeholder="你的名字" />
-  <textarea id="comment" rows="2" placeholder="輸入留言..."></textarea>
+  <input type="text" id="username" placeholder="你的名字 Your name" />
+  <textarea id="comment" rows="2" placeholder="輸入留言 Your message..."></textarea>
 
-  <label for="avatarUpload" id="avatar-label">上傳頭像</label>
+  <label for="avatarUpload" id="avatar-label">上傳頭像 Upload profile photo</label>
   <input type="file" id="avatarUpload" accept="image/*" />
 
-  <label for="photoUpload" id="photo-label">上傳照片</label>
+  <label for="photoUpload" id="photo-label">上傳照片 Upload a photo</label>
   <input type="file" id="photoUpload" accept="image/*" />
 
-  <button onclick="submitComment()">送出留言</button>
+  <button onclick="submitComment()">送出留言 Submit </button>
 </div>
 
 <audio id="bg-music" autoplay loop>
@@ -308,6 +317,7 @@
     showFloatingMessage(username, comment, avatarSrc);
     document.getElementById('notification-sound')?.play();
 
+    document.getElementById('username').value = '';
     document.getElementById('comment').value = '';
     document.getElementById('avatarUpload').value = '';
     document.getElementById('photoUpload').value = '';
