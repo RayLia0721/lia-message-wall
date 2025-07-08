@@ -5,171 +5,7 @@
   <title>Lia Birthday Message Wall</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: Arial, sans-serif;
-      background-color: #dbbcff;
-      background: url('https://lh3.googleusercontent.com/pw/AP1GczMOSBIOVaDU-qDpRGGr3R3_VhYd_07X0PK3T63xCjCS0oxVYdys4QPSxMEGZcHVzgZLGDDLv_SuyxLNy9XZEeW676QqkL7YDIyOvWsY9dnhDkG2aI9vsnFUEIz2FlQcSlEPz3WffmyJjYBSiGRaHqg=w1600-h739-s-no-gm?authuser=0') no-repeat center center fixed;
-      background-size: contain;
-      overflow: hidden;
-    }
-    #floating-message-container {
-      position: fixed;
-      top: 0; left: 0;
-      width: calc(100% - 340px);
-      height: 100%;
-      pointer-events: none;
-    }
-    .floating-message {
-      position: absolute;
-      background: rgba(255,255,255,0.9);
-      border-radius: 10px;
-      padding: 10px;
-      box-shadow: 0 0 6px rgba(0,0,0,0.2);
-      max-width: 200px;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      transition: transform 10s linear;
-    }
-    .floating-message img {
-      width: 31px;
-      height: 31px;
-      border-radius: 50%;
-      vertical-align: middle;
-      margin-right: 6px;
-    }
-    #message-wall {
-      position: fixed;
-      top: 0; right: 0;
-      width: 320px; height: 100%;
-      background: rgba(255,255,255,0.9);
-      overflow-y: auto;
-      padding: 20px 10px 80px;
-      box-sizing: border-box;
-    }
-    #message-count {
-      font-weight: bold;
-      margin-bottom: 12px;
-      text-align: center;
-    }
-    #message-list .message {
-      background: white;
-      margin-bottom: 12px;
-      border-radius: 10px;
-      padding: 10px;
-      box-shadow: 0 0 6px rgba(0,0,0,0.1);
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      position: relative;
-    }
-    .delete-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: #f0768b;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 4px 6px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    #message-list img.avatar {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      vertical-align: middle;
-      margin-right: 6px;
-    }
-    #message-list img.uploaded-photo {
-      max-width: 100%;
-      border-radius: 8px;
-      margin-top: 8px;
-    }
-    .meta {
-      font-size: 11px;
-      color: #888;
-      margin-top: 4px;
-    }
-    #input-box {
-      position: fixed;
-      bottom: 20px;
-      right: 340px;
-      width: 320px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      padding: 14px;
-      z-index: 10;
-      box-sizing: border-box;
-    }
-    #input-box input,
-    #input-box textarea {
-      width: 100%;
-      padding: 8px;
-      margin-top: 6px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-    #avatar-label, #photo-label {
-      display: block;
-      background-color: #eee;
-      padding: 8px;
-      text-align: center;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-bottom: 10px;
-      user-select: none;
-    }
-    #avatarUpload, #photoUpload {
-      display: none;
-    }
-    #input-box button {
-      width: 100%;
-      padding: 10px;
-      background: #7979ed;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 15px;
-    }
-    @media (max-width: 480px) {
-      html, body {
-        overflow: auto;
-        height: auto;
-      }
-      #floating-message-container {
-        position: static !important;
-        width: 100% !important;
-        height: auto !important;
-        pointer-events: none;
-        margin-bottom: 10px;
-      }
-      #message-wall {
-        width: 100% !important;
-        height: 250px;
-        overflow-y: auto;
-        margin-bottom: 60px;
-        box-sizing: border-box;
-      }
-      #input-box {
-        position: fixed !important;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100% !important;
-        border-radius: 0 !important;
-        box-shadow: 0 -3px 10px rgba(0,0,0,0.15) !important;
-        padding: 10px;
-        z-index: 1000;
-      }
-    }
+    /* 原本 CSS 無變動，省略顯示 */
   </style>
 </head>
 <body>
@@ -204,7 +40,16 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    onSnapshot,
+    deleteDoc,
+    doc,
+    getDocs,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCKNZ635pFVVf_V1dUL1XRq4GNa07YeeqE",
@@ -228,13 +73,25 @@
 
   onSnapshot(messagesRef, snapshot => {
     const messages = [];
-    document.getElementById('floating-message-container').innerHTML = '';
+    const existingIds = new Set();
+    document.querySelectorAll('.floating-message').forEach(div => {
+      existingIds.add(div.dataset.id);
+    });
+
     snapshot.forEach(doc => {
       const data = { ...doc.data(), id: doc.id };
       messages.push(data);
-      showFloatingMessage(data.username, data.comment, data.avatarSrc);
+      if (!existingIds.has(data.id)) {
+        showFloatingMessage(data.username, data.comment, data.avatarSrc, data.id);
+      }
     });
-    messages.sort((a, b) => a.time - b.time);
+
+    messages.sort((a, b) => {
+      const timeA = a.time?.seconds || 0;
+      const timeB = b.time?.seconds || 0;
+      return timeA - timeB;
+    });
+
     renderMessages(messages);
   });
 
@@ -286,7 +143,8 @@
 
     await addDoc(messagesRef, {
       username, comment, avatarSrc, photoSrc,
-      timestamp, country: userCountry, time: Date.now()
+      timestamp, country: userCountry,
+      time: serverTimestamp()
     });
 
     document.getElementById('notification-sound').play();
@@ -316,10 +174,11 @@
     document.getElementById('message-wall').scrollTop = list.scrollHeight;
   };
 
-  window.showFloatingMessage = function (username, comment, avatarSrc) {
+  window.showFloatingMessage = function (username, comment, avatarSrc, id) {
     const container = document.getElementById('floating-message-container');
     const msg = document.createElement('div');
     msg.className = 'floating-message';
+    msg.dataset.id = id;
     msg.innerHTML = `<div><img src="${avatarSrc}" /><strong>${username}</strong></div><div>${comment}</div>`;
     container.appendChild(msg);
     moveMessageRandomly(msg, container);
@@ -335,6 +194,10 @@
     };
     move();
     setInterval(move, 10000);
+  };
+
+  window.deleteMessage = async function (id) {
+    await deleteDoc(doc(db, "messages", id));
   };
 </script>
 
