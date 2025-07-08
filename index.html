@@ -396,24 +396,38 @@ onSnapshot(messagesRef, snapshot => {
     container.appendChild(msg);
     moveMessageRandomly(msg, container);
   }
+let mobilePlacedPositions = []; // 紀錄手機版的位置
 
 window.moveMessageRandomly = function moveMessageRandomly(msg, container) {
   const move = () => {
     const maxX = container.clientWidth - msg.offsetWidth;
     const maxY = container.clientHeight - msg.offsetHeight;
 
-    const isMobile = window.innerWidth <= 480;
+    let randomX = Math.random() * maxX;
+    let randomY = Math.random() * maxY;
 
-    let randomX, randomY;
+    if (window.innerWidth <= 480) {
+      // ✅ 手機版限定 Y 軸在 200px ~ 有效區域內
+      const minY = 400;
+      const inputBoxHeight = 100; // 留空給輸入區
+      const availableY = container.clientHeight - inputBoxHeight - msg.offsetHeight;
+      randomY = minY + Math.random() * (availableY - minY);
 
-    if (isMobile) {
-      // ✅ 手機：集中在畫面中間區域
-randomX = Math.random() * maxX;
-randomY = Math.random() * maxY;
-    } else {
-      // 桌機：照原本整個範圍隨機漂浮
-      randomX = Math.random() * maxX;
-      randomY = Math.random() * maxY;
+      // ✅ 避免和先前位置重疊（簡單距離比較）
+      let tries = 0;
+      while (tries < 10) {
+        let overlapped = mobilePlacedPositions.some(p => {
+          return Math.abs(p.x - randomX) < 80 && Math.abs(p.y - randomY) < 60;
+        });
+        if (!overlapped) break;
+        randomX = Math.random() * maxX;
+        randomY = minY + Math.random() * (availableY - minY);
+        tries++;
+      }
+
+      // 記錄位置（最多 20 筆）
+      mobilePlacedPositions.push({ x: randomX, y: randomY });
+      if (mobilePlacedPositions.length > 20) mobilePlacedPositions.shift();
     }
 
     msg.style.transform = `translate(${randomX}px, ${randomY}px)`;
