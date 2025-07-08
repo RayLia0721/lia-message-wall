@@ -3,14 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <title>Lia Birthday Message Wall</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <style>
     html, body {
       margin: 0; padding: 0; height: 100%;
       font-family: Arial, sans-serif;
       background-color: #dbbcff;
-      background: url('https://lh3.googleusercontent.com/pw/AP1GczMOSBIOVaDU-qDpRGGr3R3_VhYd_07X0PK3T63xCjCS0oxVYdys4QPSxMEGZcHVzgZLGDDLv_SuyxLNy9XZEeW676QqkL7YDIyOvWsY9dnhDkG2aI9vsnFUEIz2FlQcSlEPz3WffmyJjYBSiGRaHqg=w1600-h739-s-no-gm?authuser=0') no-repeat center center fixed;
-      background-size: contain;
       overflow: hidden;
     }
 
@@ -43,10 +41,12 @@
     }
 
     #message-wall {
-      position: fixed; top: 0; right: 0;
+      position: fixed;
+      top: 0; right: 0;
       width: 320px; height: 100%;
       background: rgba(255,255,255,0.9);
-      overflow-y: auto; padding: 20px 10px 80px;
+      overflow-y: auto;
+      padding: 20px 10px 80px;
       box-sizing: border-box;
     }
 
@@ -109,7 +109,8 @@
     }
 
     .meta {
-      font-size: 11px; color: #888;
+      font-size: 11px;
+      color: #888;
       margin-top: 4px;
     }
 
@@ -132,6 +133,7 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
+      box-sizing: border-box;
     }
 
     #avatar-label, #photo-label {
@@ -142,9 +144,12 @@
       border-radius: 6px;
       cursor: pointer;
       margin-bottom: 10px;
+      user-select: none;
     }
 
-    #avatarUpload, #photoUpload { display: none; }
+    #avatarUpload, #photoUpload {
+      display: none;
+    }
 
     #input-box button {
       width: 100%; padding: 10px;
@@ -155,6 +160,31 @@
       cursor: pointer;
       font-size: 15px;
     }
+
+    /* 手機響應式 */
+    @media (max-width: 480px) {
+      #floating-message-container {
+        width: 100%;
+      }
+      #message-wall {
+        position: static;
+        width: 100%;
+        height: auto;
+        max-width: none;
+        overflow: visible;
+        padding-bottom: 60px;
+      }
+      #input-box {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        border-radius: 0;
+        box-shadow: 0 -3px 10px rgba(0,0,0,0.15);
+        padding: 10px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -163,20 +193,21 @@
 
 <div id="message-wall">
   <div id="message-count">目前留言數：0</div>
+  <button id="clear-all-btn" onclick="clearAllMessages()">清除所有留言</button>
   <div id="message-list"></div>
 </div>
 
 <div id="input-box">
-  <input type="text" id="username" placeholder="你的名字 Your name" />
-  <textarea id="comment" rows="2" placeholder="輸入留言 Your message..."></textarea>
+  <input type="text" id="username" placeholder="你的名字" />
+  <textarea id="comment" rows="2" placeholder="輸入留言..."></textarea>
 
-  <label for="avatarUpload" id="avatar-label">上傳頭像 Upload Profile Photo</label>
+  <label for="avatarUpload" id="avatar-label">上傳頭像</label>
   <input type="file" id="avatarUpload" accept="image/*" />
 
-  <label for="photoUpload" id="photo-label">上傳照片Upload a photo</label>
+  <label for="photoUpload" id="photo-label">上傳照片</label>
   <input type="file" id="photoUpload" accept="image/*" />
 
-  <button onclick="submitComment()">送出留言 Submit </button>
+  <button onclick="submitComment()">送出留言</button>
 </div>
 
 <audio id="bg-music" autoplay loop>
@@ -187,7 +218,6 @@
   <source src="https://www.dropbox.com/scl/fi/jcejfp8pufq7iqkjemkmh/buyabu.MP3?rlkey=wdh3lmgbswbdlblvv5ai6sfc8&raw=1" />
 </audio>
 
-<!-- Firebase + 留言功能 -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
   import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
@@ -212,20 +242,12 @@
     .then(data => userCountry = (data.country === 'TW') ? 'Taiwan' : data.country)
     .catch(() => {});
 
- onSnapshot(messagesRef, snapshot => {
-  const messages = [];
-  snapshot.forEach(doc => messages.push({ ...doc.data(), id: doc.id }));
-  messages.sort((a, b) => a.time - b.time);
-
-  renderMessages(messages); // 渲染右邊留言
-
-  // ✅ 顯示左邊飄浮留言
-  const container = document.getElementById('floating-message-container');
-  container.innerHTML = ''; // 清空舊的浮動留言
-  for (const msg of messages) {
-    showFloatingMessage(msg.username, msg.comment, msg.avatarSrc);
-  }
-});
+  onSnapshot(messagesRef, snapshot => {
+    const messages = [];
+    snapshot.forEach(doc => messages.push({ ...doc.data(), id: doc.id }));
+    messages.sort((a, b) => a.time - b.time);
+    renderMessages(messages);
+  });
 
   window.submitComment = async function submitComment() {
     const username = document.getElementById('username').value.trim();
@@ -350,5 +372,6 @@
     setInterval(move, 10000);
   }
 </script>
+
 </body>
 </html>
