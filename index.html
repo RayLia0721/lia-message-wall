@@ -397,17 +397,32 @@ onSnapshot(messagesRef, snapshot => {
     moveMessageRandomly(msg, container);
   }
 
-  window.moveMessageRandomly = function moveMessageRandomly(msg, container) {
-    const move = () => {
-      const maxX = container.clientWidth - msg.offsetWidth;
-      const maxY = container.clientHeight - msg.offsetHeight;
-      const randomX = Math.random() * maxX;
-      const randomY = Math.random() * maxY;
-      msg.style.transform = `translate(${randomX}px, ${randomY}px)`;
-    };
-    move();
-    setInterval(move, 10000);
-  }
+window.moveMessageRandomly = function moveMessageRandomly(msg, container) {
+  const move = () => {
+    const maxX = container.clientWidth - msg.offsetWidth;
+    const maxY = container.clientHeight - msg.offsetHeight;
+
+    const isMobile = window.innerWidth <= 480;
+
+    let randomX, randomY;
+
+    if (isMobile) {
+      // ✅ 手機：集中在畫面中間區域
+randomX = Math.random() * maxX;
+randomY = Math.random() * maxY;
+    } else {
+      // 桌機：照原本整個範圍隨機漂浮
+      randomX = Math.random() * maxX;
+      randomY = Math.random() * maxY;
+    }
+
+    msg.style.transform = `translate(${randomX}px, ${randomY}px)`;
+  };
+
+  move();
+  setInterval(move, 10000);
+};
+
 
 const bgMusic = document.getElementById('bg-music');
 const notificationSound = document.getElementById('notification-sound');
